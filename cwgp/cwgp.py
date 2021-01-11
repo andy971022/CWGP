@@ -1,18 +1,8 @@
-from autograd import elementwise_grad, grad
-import autograd.numpy as np
-from scipy.optimize import minimize
-from kernel import Kernel
-from phi import Phi
-from likelihood import Likelihood
+from cwgp.phi import Phi
 
 class CWGP():
 	def __init__(self, fn, data):
-		self.phi = Phi(fn)
-		self.data = data
+		self.phi = Phi(fn,data)
 
-	def likelihood(self, fn,):
-		comp, d_comp = self.phi.comp_phi(data)
-
-	def minimize(self, lf):
-		pass
-
+	def fit():
+		return self.phi.minimize_lf()
