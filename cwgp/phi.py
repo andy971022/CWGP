@@ -3,7 +3,7 @@ import autograd.numpy as np
 import copy
 from scipy.optimize import minimize
 
-from cwgp.kernel import Kernel
+from cwgp.kernel import RBF
 
 
 class Phi():
@@ -11,7 +11,7 @@ class Phi():
             self,
             fn,
             data,
-            kernel=Kernel.RBF,
+            kernel=RBF,
             par_len=4,
             transformations=1):
         self.fn = fn  # a differentiable function
@@ -28,7 +28,7 @@ class Phi():
         for i in range(0, self.n):
             d_comp *= self.d_fn(par[self.par_len * i:], comp)
             comp = self.fn(par[self.par_len * i:], comp)
-        return comp, dcomp
+        return comp, d_comp
 
     def likelihood(self, par):
         phi_y, chain_d_sal = self.comp_phi(par)
