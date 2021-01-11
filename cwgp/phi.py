@@ -1,6 +1,7 @@
 from autograd import elementwise_grad, grad
 import autograd.numpy as np
 import copy
+from scipy.optimize import minimize
 
 from cwgp.kernel import Kernel
 
@@ -21,7 +22,7 @@ class Phi():
         self.n = transformations
 
     def comp_phi(self, par):
-        assert len(par) >= self.par_len * self.n, "Not enough Parameters"
+        assert len(par) >= self.par_len * self.n, "Not enough parameters"
         comp = copy.deepcopy(self.y)
         d_comp = 1
         for i in range(0, self.n):
@@ -30,7 +31,7 @@ class Phi():
         return comp, dcomp
 
     def likelihood(self, par):
-        phi_y, chain_d_sal = self.comp_phi(par, self.y)
+        phi_y, chain_d_sal = self.comp_phi(par)
         # phi_y = phi_y[np.newaxis].reshape(-1,1)
         t_phi_y = np.transpose(phi_y)
 
