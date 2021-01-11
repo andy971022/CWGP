@@ -15,15 +15,15 @@ class Phi():
 		self.n = transformations
 
 	def comp_phi(self, par):
-    	assert len(par) >= self.par_len * self.n, "Not enough Parameters"
+		assert len(par) >= self.par_len * self.n, "Not enough Parameters"
 		comp = copy.deepcopy(self.y)
 		d_comp = 1
-    	for i in range(0, n):
-    		d_comp *= self.d_fn(par[self.par_len * i:], comp)
-        	comp = self.fn(par[self.par_len * i:], comp)
-    	return comp, dcomp
+		for i in range(0, n):
+			d_comp *= self.d_fn(par[self.par_len * i:], comp)
+			comp = self.fn(par[self.par_len * i:], comp)
+		return comp, dcomp
 
-    def likelihood(self, par):
+	def likelihood(self, par):
 		phi_y, chain_d_sal = self.comp_phi(par,self.y)
 		# phi_y = phi_y[np.newaxis].reshape(-1,1)
 		t_phi_y = np.transpose(phi_y)
@@ -34,7 +34,7 @@ class Phi():
 
 		return  0.5 * np.log(np.linalg.det(cov_xx)) + gaussian_params - sum(np.log(chain_d_sal))
 
-	def minimize_lf(self, method = 'L-BFGS-B', loop=True):
+	def minimize_lf(self, method = 'L-BFGS-B',loop=True):
 		res = minimize(self.likelihood, np.random.rand(4*self.n), method='L-BFGS-B')
 		if loop:
 			while res.success == False:
