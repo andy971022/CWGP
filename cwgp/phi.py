@@ -24,7 +24,7 @@ class Phi():
         assert len(par) >= self.par_len * self.n, "Not enough Parameters"
         comp = copy.deepcopy(self.y)
         d_comp = 1
-        for i in range(0, n):
+        for i in range(0, self.n):
             d_comp *= self.d_fn(par[self.par_len * i:], comp)
             comp = self.fn(par[self.par_len * i:], comp)
         return comp, dcomp
