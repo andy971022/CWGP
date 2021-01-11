@@ -6,21 +6,21 @@ from cwgp.kernel import Kernel
 
 
 class Phi():
-	def __init__(self, fn, data, kernel=Kernel.RBF, par_len=4, transformations=1): #
-		self.fn = fn # a differentiable function
-		self.d_fn = elementwise_grad(fn,1) # take derivative
+	def __init__(self, fn, data, kernel=Kernel.RBF, par_len=4, transformations=1):
+		self.fn = fn  # a differentiable function
+		self.d_fn = elementwise_grad(fn, 1)  # take derivative
 		self.y = data
 		self.kernel = kernel
 		self.par_len = par_len
 		self.n = transformations
 
 	def comp_phi(self, par):
-    	assert len(par) >= self.par_len*self.n, "Not enough Parameters"
+    	assert len(par) >= self.par_len * self.n, "Not enough Parameters"
 		comp = copy.deepcopy(self.y)
 		d_comp = 1
-    	for i in range(0,n):
-    		d_comp *= self.d_fn(par[self.par_len*i:],comp)
-        	comp = self.fn(par[self.par_len*i:],comp)
+    	for i in range(0, n):
+    		d_comp *= self.d_fn(par[self.par_len * i:], comp)
+        	comp = self.fn(par[self.par_len * i:], comp)
     	return comp, dcomp
 
     def likelihood(self, par):
