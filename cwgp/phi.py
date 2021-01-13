@@ -3,22 +3,32 @@ import autograd.numpy as np
 import copy
 from scipy.optimize import minimize
 
-from cwgp.kernel import RBF
+from cwgp.kernel import RBF, OU
 
 
 class Phi():
+    PAR_BANK = {
+        "sal": 4,
+        "sa": 2,
+        "asinh": 4,
+        "box_cox": 1,
+    }
+
     def __init__(
             self,
             fn,
             data,
-            kernel=RBF,
-            par_len=4,
+            kernel=OU,
+            par_len=None,
             transformations=1):
         self.fn = fn  # a differentiable function
         self.d_fn = elementwise_grad(fn, 1)  # take derivative
         self.y = data
         self.kernel = kernel
-        self.par_len = par_len
+        if par_len:
+            self.par_len = par_len
+        else:
+            self.par_len = self.PAR_BANK[fn.__name__]
         self.n = transformations
 
     def comp_phi(self, par):
@@ -32,10 +42,8 @@ class Phi():
 
     def likelihood(self, par):
         phi_y, chain_d_sal = self.comp_phi(par)
-        # phi_y = phi_y[np.newaxis].reshape(-1,1)
         t_phi_y = np.transpose(phi_y)
 
-        # cov_xx = self.kernel(gamma,np.log(np.exp(phi_y) @ np.exp(-(t_phi_y))))
         cov_xx = self.kernel(phi_y, t_phi_y)
         gaussian_params = 0.5 * (t_phi_y) @ np.linalg.inv(cov_xx) @ phi_y
 
@@ -46,14 +54,14 @@ class Phi():
         res = minimize(
             self.likelihood,
             np.random.rand(
-                4 * self.n),
+                self.par_len * self.n),
             method='L-BFGS-B')
         if loop:
             while res.success == False:
                 try:
                     res = minimize(
                         self.likelihood, np.random.rand(
-                            4 * self.n), method='L-BFGS-B')
+                            self.par_len * self.n), method='L-BFGS-B')
                 except BaseException:
                     pass
         return res
