@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="CWGP",
-    version="1.1.0",
+    version="1.1.1",
     author="Andy Chen",
     author_email="andy97_861022_chen@hotmail.com",
     description="CWGP",
@@ -17,6 +17,10 @@ setuptools.setup(
                 "Programming Language :: Python :: 3",
                 "License :: OSI Approved :: MIT License",
                 "Operating System :: OS Independent",
+    ],
+    install_requires=[
+        'autograd',
+        'scipy',
     ],
     python_requires='>=3.6',
 )
