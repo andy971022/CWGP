@@ -1,5 +1,5 @@
 # Compositionally Warped Gaussian Processes
-This package is dedicated to realizing method used in this [paper](https://arxiv.org/abs/1906.09665).
+This package is dedicated to realizing methods used in this [paper](https://arxiv.org/abs/1906.09665).
 
 ## Tutorial
 
