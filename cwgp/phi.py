@@ -47,21 +47,21 @@ class Phi():
         cov_xx = self.kernel(phi_y, t_phi_y)
         gaussian_params = 0.5 * (t_phi_y) @ np.linalg.inv(cov_xx) @ phi_y
 
-        return 0.5 * np.log(np.linalg.det(cov_xx)) + \
-            gaussian_params - sum(np.log(chain_d_sal))
+        return np.ravel(0.5 * np.log(np.linalg.det(cov_xx)) +
+                        gaussian_params - sum(np.log(chain_d_sal)))
 
-    def minimize_lf(self, method='L-BFGS-B', loop=True):
+    def minimize_lf(self, method='l-bfgs-b', loop=True):
         res = minimize(
             self.likelihood,
             np.random.rand(
                 self.par_len * self.n),
-            method='L-BFGS-B')
+            method=method)
         if loop:
             while res.success == False:
                 try:
                     res = minimize(
                         self.likelihood, np.random.rand(
-                            self.par_len * self.n), method='L-BFGS-B')
+                            self.par_len * self.n), method=method)
                 except BaseException:
                     pass
         return res
