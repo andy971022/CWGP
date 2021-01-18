@@ -5,13 +5,15 @@ from scipy.optimize import minimize
 
 from cwgp.kernel import RBF, OU
 
+from cwgp.transformations import sal, sa, asinh, box_cox, inv_sal, inv_sa, inv_asinh, inv_box_cox
+
 
 class Phi():
-    PAR_BANK = {
-        "sal": 4,
-        "sa": 2,
-        "asinh": 4,
-        "box_cox": 1,
+    FN_BANK = {
+        "sal": {"fn": sal, "inv_fn": inv_sal, "par_len": 4},
+        "sa": {"fn": sa, "inv_fn": inv_sa, "par_len": 2},
+        "asinh": {"fn": asinh, "inv_fn": inv_asinh, "par_len": 4},
+        "box_cox": {"fn": box_cox, "inv_fn": inv_box_cox, "par_len": 1},
     }
 
     def __init__(
@@ -21,14 +23,15 @@ class Phi():
             kernel=OU,
             par_len=None,
             transformations=1):
-        self.fn = fn  # a differentiable function
-        self.d_fn = elementwise_grad(fn, 1)  # take derivative
+        self.fn = self.FN_BANK[fn]["fn"]  # a differentiable function
+        self.inv_fn = self.FN_BANK[fn]["inv_fn"]
+        self.d_fn = elementwise_grad(self.fn, 1)  # take derivative
         self.y = data
         self.kernel = kernel
         if par_len:
             self.par_len = par_len
         else:
-            self.par_len = self.PAR_BANK[fn.__name__]
+            self.par_len = self.FN_BANK[fn]["par_len"]
         self.n = transformations
 
     def comp_phi(self, par):
@@ -39,6 +42,18 @@ class Phi():
             d_comp *= self.d_fn(par[self.par_len * i:], comp)
             comp = self.fn(par[self.par_len * i:], comp)
         return comp, d_comp
+
+    def inv_comp_phi(self, par, x):
+        assert len(par) >= self.par_len * self.n, "Not enough parameters"
+        inv_comp = copy.deepcopy(x)
+        for i in range(0, self.n):
+            print(i)
+            if i == 0:
+                inv_comp = self.inv_fn(par[-self.par_len:], inv_comp)
+            else:
+                inv_comp = self.inv_fn(
+                    par[-self.par_len * (i + 1):-self.par_len * i], inv_comp)
+        return inv_comp
 
     def likelihood(self, par):
         phi_y, chain_d_sal = self.comp_phi(par)
