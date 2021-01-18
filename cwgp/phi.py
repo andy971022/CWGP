@@ -63,6 +63,9 @@ class Phi():
         return np.ravel(0.5 * np.log(np.linalg.det(cov_xx)) +
                         gaussian_params - sum(np.log(chain_d_sal)))
 
+    def reml(self, method=):
+        pass
+
     def minimize_lf(self, method='l-bfgs-b', loop=True):
         res = minimize(
             self.likelihood,
