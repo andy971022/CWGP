@@ -4,7 +4,6 @@ import copy
 from scipy.optimize import minimize
 
 from cwgp.kernel import RBF, OU
-
 from cwgp.transformations import sal, sa, asinh, box_cox, inv_sal, inv_sa, inv_asinh, inv_box_cox
 
 
@@ -47,7 +46,6 @@ class Phi():
         assert len(par) >= self.par_len * self.n, "Not enough parameters"
         inv_comp = copy.deepcopy(x)
         for i in range(0, self.n):
-            print(i)
             if i == 0:
                 inv_comp = self.inv_fn(par[-self.par_len:], inv_comp)
             else:
