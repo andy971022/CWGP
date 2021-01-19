@@ -13,11 +13,11 @@ betas = betas[np.newaxis].reshape(-1, 1)
 sns.distplot(betas)
 plt.show()
 
-compgp = CWGP("sa", betas, transformations=5)
+compgp = CWGP("sa", n=5)
 
-model = compgp.fit()
+model = compgp.fit(betas)
 
-transformed_betas, d = compgp.phi.comp_phi(model.x)
+transformed_betas, d = compgp.phi.comp_phi(model.x, betas)
 
 sns.distplot(transformed_betas)
 plt.show()

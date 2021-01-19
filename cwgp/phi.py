@@ -18,24 +18,23 @@ class Phi():
     def __init__(
             self,
             fn,
-            data,
             kernel=OU,
+            kernel_params=False,
             par_len=None,
-            transformations=1):
+            n=1):
         self.fn = self.FN_BANK[fn]["fn"]  # a differentiable function
         self.inv_fn = self.FN_BANK[fn]["inv_fn"]
         self.d_fn = elementwise_grad(self.fn, 1)  # take derivative
-        self.y = data
         self.kernel = kernel
         if par_len:
             self.par_len = par_len
         else:
             self.par_len = self.FN_BANK[fn]["par_len"]
-        self.n = transformations
+        self.n = n
 
-    def comp_phi(self, par):
+    def comp_phi(self, par, y):
         assert len(par) >= self.par_len * self.n, "Not enough parameters"
-        comp = copy.deepcopy(self.y)
+        comp = copy.deepcopy(y)
         d_comp = 1
         for i in range(0, self.n):
             d_comp *= self.d_fn(par[self.par_len * i:], comp)
@@ -53,8 +52,8 @@ class Phi():
                     par[-self.par_len * (i + 1):-self.par_len * i], inv_comp)
         return inv_comp
 
-    def likelihood(self, par):
-        phi_y, chain_d_sal = self.comp_phi(par)
+    def likelihood(self, par, y):
+        phi_y, chain_d_sal = self.comp_phi(par, y)
         t_phi_y = np.transpose(phi_y)
 
         cov_xx = self.kernel(phi_y, t_phi_y)
@@ -63,21 +62,23 @@ class Phi():
         return np.ravel(0.5 * np.log(np.linalg.det(cov_xx)) +
                         gaussian_params - sum(np.log(chain_d_sal)))
 
-    def reml(self, method=):
+    def reml(self, method):
         pass
 
-    def minimize_lf(self, method='l-bfgs-b', loop=True):
+    def minimize_lf(self, y, method='l-bfgs-b', loop=True):
+    	# http://stackoverflow.com/questions/19843752/structure-of-inputs-to-scipy-minimize-function
         res = minimize(
             self.likelihood,
             np.random.rand(
                 self.par_len * self.n),
+            args=(y,),
             method=method)
         if loop:
             while res.success == False:
                 try:
                     res = minimize(
                         self.likelihood, np.random.rand(
-                            self.par_len * self.n), method=method)
+                            self.par_len * self.n), args=(y,), method=method)
                 except BaseException:
                     pass
         return res
