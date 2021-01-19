@@ -7,3 +7,6 @@ class CWGP():
 
     def fit(self, y, **kwargs):
         return self.phi.minimize_lf(y, **kwargs)
+
+    def normality_test(self):
+        pass

@@ -15,17 +15,23 @@ class Phi():
         "box_cox": {"fn": box_cox, "inv_fn": inv_box_cox, "par_len": 1},
     }
 
+    KERNEL_BANK = {
+    "OU": {"kern": OU, "params": 1},
+    "RBF": {"kern": RBF, "params": 1},
+    }
+
     def __init__(
             self,
             fn,
-            kernel=OU,
-            kernel_params=False,
+            kernel="OU",
+            kernel_params_estimate=False,
             par_len=None,
             n=1):
         self.fn = self.FN_BANK[fn]["fn"]  # a differentiable function
         self.inv_fn = self.FN_BANK[fn]["inv_fn"]
         self.d_fn = elementwise_grad(self.fn, 1)  # take derivative
-        self.kernel = kernel
+        self.kernel = self.KERNEL_BANK[kernel]["kern"]
+        self.kernel_params = self.KERNEL_BANK[kernel]["params"] if kernel_params_estimate else 0
         if par_len:
             self.par_len = par_len
         else:
@@ -43,6 +49,8 @@ class Phi():
 
     def inv_comp_phi(self, par, x):
         assert len(par) >= self.par_len * self.n, "Not enough parameters"
+        if self.kernel_params:
+            par = par[:-self.kernel_params]
         inv_comp = copy.deepcopy(x)
         for i in range(0, self.n):
             if i == 0:
@@ -55,8 +63,10 @@ class Phi():
     def likelihood(self, par, y):
         phi_y, chain_d_sal = self.comp_phi(par, y)
         t_phi_y = np.transpose(phi_y)
-
-        cov_xx = self.kernel(phi_y, t_phi_y)
+        if self.kernel_params:
+            cov_xx = self.kernel(phi_y, t_phi_y, par[-self.kernel_params:])
+        else:
+            cov_xx = self.kernel(phi_y, t_phi_y)
         gaussian_params = 0.5 * (t_phi_y) @ np.linalg.inv(cov_xx) @ phi_y
 
         return np.ravel(0.5 * np.log(np.linalg.det(cov_xx)) +
@@ -66,19 +76,19 @@ class Phi():
         pass
 
     def minimize_lf(self, y, method='l-bfgs-b', loop=True):
-    	# http://stackoverflow.com/questions/19843752/structure-of-inputs-to-scipy-minimize-function
+        # http://stackoverflow.com/questions/19843752/structure-of-inputs-to-scipy-minimize-function
         res = minimize(
-            self.likelihood,
-            np.random.rand(
-                self.par_len * self.n),
-            args=(y,),
-            method=method)
+                self.likelihood,
+                np.random.rand(
+                    self.par_len * self.n + self.kernel_params),
+                args=(y,),
+                method=method)
         if loop:
             while res.success == False:
                 try:
                     res = minimize(
                         self.likelihood, np.random.rand(
-                            self.par_len * self.n), args=(y,), method=method)
+                            self.par_len * self.n + self.kernel_params), args=(y,), method=method)
                 except BaseException:
                     pass
         return res
