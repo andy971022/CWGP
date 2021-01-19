@@ -16,8 +16,8 @@ class Phi():
     }
 
     KERNEL_BANK = {
-    "OU": {"kern": OU, "params": 1},
-    "RBF": {"kern": RBF, "params": 1},
+        "OU": {"kern": OU, "params": 1},
+        "RBF": {"kern": RBF, "params": 1},
     }
 
     def __init__(
@@ -32,10 +32,7 @@ class Phi():
         self.d_fn = elementwise_grad(self.fn, 1)  # take derivative
         self.kernel = self.KERNEL_BANK[kernel]["kern"]
         self.kernel_params = self.KERNEL_BANK[kernel]["params"] if kernel_params_estimate else 0
-        if par_len:
-            self.par_len = par_len
-        else:
-            self.par_len = self.FN_BANK[fn]["par_len"]
+        self.par_len = self.FN_BANK[fn]["par_len"]
         self.n = n
 
     def comp_phi(self, par, y):
@@ -78,17 +75,24 @@ class Phi():
     def minimize_lf(self, y, method='l-bfgs-b', loop=True):
         # http://stackoverflow.com/questions/19843752/structure-of-inputs-to-scipy-minimize-function
         res = minimize(
-                self.likelihood,
-                np.random.rand(
-                    self.par_len * self.n + self.kernel_params),
-                args=(y,),
-                method=method)
+            self.likelihood,
+            np.random.rand(
+                self.par_len * self.n + self.kernel_params),
+            args=(y,),
+            method=method)
         if loop:
             while res.success == False:
                 try:
                     res = minimize(
-                        self.likelihood, np.random.rand(
-                            self.par_len * self.n + self.kernel_params), args=(y,), method=method)
+                        self.likelihood,
+                        np.random.rand(
+                            self.par_len *
+                            self.n +
+                            self.kernel_params),
+                        args=(
+                            y,
+                        ),
+                        method=method)
                 except BaseException:
                     pass
         return res
