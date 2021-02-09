@@ -3,6 +3,7 @@ import autograd.numpy as np
 import seaborn as sns
 from cwgp.cwgp import CWGP
 import cwgp
+from scipy import stats
 
 print(cwgp)
 
@@ -13,13 +14,16 @@ betas = betas[np.newaxis].reshape(-1, 1)
 sns.distplot(betas)
 plt.show()
 
-compgp = CWGP("sa", n=3, kernel="OU", kernel_params_estimate=True)
+compgp = CWGP("sa", n=3)
 
 model = compgp.fit(betas)
 
 transformed_betas, d = compgp.phi.comp_phi(model.x, betas)
 
 sns.distplot(transformed_betas)
+plt.show()
+
+stats.probplot(np.ravel(transformed_betas), dist="norm", plot=plt)
 plt.show()
 
 

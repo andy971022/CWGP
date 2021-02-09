@@ -10,3 +10,6 @@ class CWGP():
 
     def normality_test(self):
         pass
+
+    def grid_search(self):
+        pass

@@ -74,12 +74,8 @@ class Phi():
 
     def minimize_lf(self, y, method='l-bfgs-b', loop=True):
         # http://stackoverflow.com/questions/19843752/structure-of-inputs-to-scipy-minimize-function
-        res = minimize(
-            self.likelihood,
-            np.random.rand(
-                self.par_len * self.n + self.kernel_params),
-            args=(y,),
-            method=method)
+        res = minimize
+        res.success = False
         if loop:
             while res.success == False:
                 try:
@@ -95,4 +91,5 @@ class Phi():
                         method=method)
                 except BaseException:
                     pass
+        self.res = res
         return res
