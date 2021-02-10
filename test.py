@@ -7,7 +7,6 @@ from cwgp.grid_search import grid_search
 from scipy import stats
 
 
-
 betas = np.random.exponential(scale=5, size=100)
 betas = betas[np.newaxis].reshape(-1, 1)
 
@@ -37,6 +36,7 @@ plt.show()
 
 
 def estimator(*args):
-	print(args)
+    print(args)
 
-grid_search(estimator, betas, betas) # second param is a place holder
+
+grid_search(estimator, betas, betas)  # second param is a place holder
