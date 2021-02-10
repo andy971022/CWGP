@@ -2,10 +2,10 @@ import matplotlib.pyplot as plt
 import autograd.numpy as np
 import seaborn as sns
 from cwgp.cwgp import CWGP
-import cwgp
+from cwgp.grid_search import grid_search
+
 from scipy import stats
 
-print(cwgp)
 
 
 betas = np.random.exponential(scale=5, size=100)
@@ -34,3 +34,9 @@ fig, ax = plt.subplots(1, 2)
 sns.distplot(inv_transformed_betas, ax=ax[0])
 sns.distplot(betas, ax=ax[1])
 plt.show()
+
+
+def estimator(*args):
+	print(args)
+
+grid_search(estimator, betas, betas) # second param is a place holder
