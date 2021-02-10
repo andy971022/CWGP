@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="CWGP",
-    version="1.2.5",
+    version="1.3.0",
     author="Andy Chen",
     author_email="andy97_861022_chen@hotmail.com",
     description="CWGP",
@@ -21,6 +21,8 @@ setuptools.setup(
     install_requires=[
         'autograd',
         'scipy>=1.5.4',
+        'tqdm>=4.56.1',
+        'numpy>=1.18.0'
     ],
     python_requires='>=3.6',
 )
