@@ -46,4 +46,8 @@ def estimator(*args):
 
  # second param is a place holder
  # should give 9^3 combinations
-grid_search(estimator, betas, betas, {"c":3,"n":[1,2,3],"transformations":["sa","sal","box_cox"]}) 
+grid_search(
+    estimator, betas, betas, {
+        "c": 3, "n": [
+            1, 2, 3], "transformations": [
+                "sa", "sal", "box_cox"]})
