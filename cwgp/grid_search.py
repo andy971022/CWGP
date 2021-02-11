@@ -33,11 +33,11 @@ cwpg : dict
     transformations = params.pop("transformations", ["sa", "sal"])
     cwgp_params = [transformations, n]
     params_product = list(itertools.product(*cwgp_params))
+    print(params_product)
     params_combination = []
 
-    for param in itertools.permutations(params_product, c):
-        if param not in params_combination:
-            params_combination.append(param)
+    for param in itertools.product(params_product, repeat=c):
+        params_combination.append(param)
 
     cwgp = {}
     for index, param in enumerate(tqdm(params_combination)):

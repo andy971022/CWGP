@@ -1,10 +1,14 @@
 import matplotlib.pyplot as plt
 import autograd.numpy as np
 import seaborn as sns
+from scipy import stats
+
+
 from cwgp.cwgp import CWGP
 from cwgp.grid_search import grid_search
+import cwgp
 
-from scipy import stats
+print(cwgp)
 
 
 betas = np.random.exponential(scale=5, size=100)
@@ -36,7 +40,10 @@ plt.show()
 
 
 def estimator(*args):
-    print(args)
+    # print(args)
+    pass
 
 
-grid_search(estimator, betas, betas)  # second param is a place holder
+ # second param is a place holder
+ # should give 9^3 combinations
+grid_search(estimator, betas, betas, {"c":3,"n":[1,2,3],"transformations":["sa","sal","box_cox"]}) 
