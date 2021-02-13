@@ -12,7 +12,6 @@ print(cwgp)
 
 
 betas = np.random.exponential(scale=5, size=100)
-betas = betas[np.newaxis].reshape(-1, 1)
 
 sns.distplot(betas)
 plt.show()
@@ -26,7 +25,7 @@ transformed_betas, d = compgp.phi.comp_phi(model.x, betas)
 sns.distplot(transformed_betas)
 plt.show()
 
-stats.probplot(np.ravel(transformed_betas), dist="norm", plot=plt)
+stats.probplot(transformed_betas, dist="norm", plot=plt)
 plt.show()
 
 
