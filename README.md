@@ -19,7 +19,7 @@ import seaborn as sns
 
 exp = np.random.exponential(scale=5, size=100)
 ```
-![](1.png)
+![](./images/1.png)
 
 We now instantiate a CWGP class consisting of 3 Sinh-Arcsinh transformations. 
 ``` python
@@ -45,7 +45,7 @@ t_exp, d = compgp.phi.comp_phi(params, exp)
 sns.distplot(transformed_betas)
 plt.show()
 ```
-![](2.png)
+![](./images/2.png)
 
 Let's make a QQ-plot and see how Gaussian it is.
 ``` python
@@ -54,7 +54,7 @@ from scipy import stats
 stats.probplot(t_exp, dist="norm", plot=plt)
 plt.show()
 ```
-![](3.png)
+![](./images/3.png)
 
 The inverse function is also implemented.
 ``` python
@@ -70,7 +70,7 @@ plt.show()
 
 The one on the left is the one being transformed and transformed-back, and the one on the right is the original distribution.
 They should be exactly the same.  
-![](4.png)
+![](./images/4.png)
 
 ## Transformations
 
