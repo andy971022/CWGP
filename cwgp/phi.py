@@ -3,7 +3,7 @@ import autograd.numpy as np
 import copy
 from scipy.optimize import minimize
 
-from cwgp.kernel import RBF, OU
+from cwgp.kernel import RBF, OU, Matern32
 from cwgp.transformations import sal, sa, asinh, box_cox, inv_sal, inv_sa, inv_asinh, inv_box_cox
 
 
@@ -18,6 +18,7 @@ class Phi():
     KERNEL_BANK = {
         "OU": {"kern": OU, "params": 1},
         "RBF": {"kern": RBF, "params": 1},
+        "Matern32": {"kern": Matern32, "params": 2},
     }
 
     def __init__(
@@ -65,7 +66,6 @@ class Phi():
         else:
             cov_xx = self.kernel(phi_y, t_phi_y)
         gaussian_params = 0.5 * (t_phi_y) @ np.linalg.inv(cov_xx) @ phi_y
-
         return np.ravel(0.5 * np.log(np.linalg.det(cov_xx)) +
                         gaussian_params - sum(np.log(chain_d_sal)))
 
