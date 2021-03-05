@@ -16,9 +16,9 @@ betas = np.random.exponential(scale=5, size=100)
 sns.distplot(betas)
 plt.show()
 
-compgp = CWGP("sa", n=3)
+compgp = CWGP("sa", n=3, kernel="RBF", kernel_params_estimate=False)
 
-model = compgp.fit(betas)
+model = compgp.fit(betas, method="l-bfgs-b")
 
 transformed_betas, d = compgp.phi.comp_phi(model.x, betas)
 
