@@ -16,9 +16,9 @@ class Phi():
     }
 
     KERNEL_BANK = {
-        "OU": {"kern": OU, "params": 1},
-        "RBF": {"kern": RBF, "params": 1},
-        "Matern32": {"kern": Matern32, "params": 2},
+        "OU": {"kern": OU, "params": 1, "init_scale": 1},
+        "RBF": {"kern": RBF, "params": 1, "init_scale": 10},
+        "Matern32": {"kern": Matern32, "params": 2, "init_scale": 10},
     }
 
     def __init__(
@@ -34,6 +34,7 @@ class Phi():
         self.kernel = self.KERNEL_BANK[kernel]["kern"]
         self.kernel_params = self.KERNEL_BANK[kernel]["params"] if kernel_params_estimate else 0
         self.par_len = self.FN_BANK[fn]["par_len"]
+        self.init_scale = self.KERNEL_BANK[kernel]["init_scale"]
         self.n = n
 
     def comp_phi(self, par, y):
@@ -81,7 +82,7 @@ class Phi():
                 try:
                     res = minimize(
                         self.likelihood,
-                        np.random.rand(
+                        self.init_scale*np.random.rand(
                             self.par_len *
                             self.n +
                             self.kernel_params),

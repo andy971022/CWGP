@@ -11,8 +11,8 @@ def OU(x, y, par=[1]):
 
 
 def RBF(x, y, par=[1]):
-    return np.exp(-par[0] *
-                  distance(x,y)**2)
+    return np.exp(-
+                  np.power(distance(x/(par[0]),y/(par[0])),2))
 
 def Matern32(x, y, par=[1,1]):
     return par[0]*(1+np.sqrt(3)*distance(x,y)/par[1])*np.exp(-np.sqrt(3)*distance(x,y)/par[1])
