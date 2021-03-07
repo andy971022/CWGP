@@ -16,7 +16,7 @@ betas = np.random.exponential(scale=5, size=100)
 sns.distplot(betas)
 plt.show()
 
-compgp = CWGP("sa", n=3, kernel="Matern32", kernel_params_estimate=False)
+compgp = CWGP("box_cox", n=1, kernel="OU", kernel_params_estimate=False)
 
 model = compgp.fit(betas, method="l-bfgs-b")
 
@@ -38,8 +38,8 @@ sns.distplot(betas, ax=ax[1])
 plt.show()
 
 
-def estimator(*args):
-    # print(args)
+def estimator(*args,**kwargs):
+    print(kwargs["test"])
     pass
 
 
@@ -49,4 +49,4 @@ grid_search(
     estimator, betas, betas, {
         "c": 3, "n": [
             1, 2, 3], "transformations": [
-                "sa", "sal", "box_cox"]})
+                "sa", "sal", "box_cox"]}, test="hi")

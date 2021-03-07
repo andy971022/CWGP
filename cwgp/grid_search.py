@@ -7,7 +7,7 @@ from tqdm import tqdm
 from cwgp.cwgp import CWGP
 
 
-def grid_search(estimator, x, y, params={}, reverse_model_order=False, *args):
+def grid_search(estimator, x, y, params={}, reverse_model_order=False, **kwargs):
     """
     Exhausts all given combinations of cwgp
 
@@ -54,5 +54,5 @@ cwpg : dict
         if reverse_model_order:
             # For conveniences in inverse computation
             model_holder = model_holder[::-1]
-        cwgp[index]["result"] = estimator(x, t_data, model_holder, *args)
+        cwgp[index]["result"] = estimator(x, t_data, model_holder, **kwargs)
     return cwgp
