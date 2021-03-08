@@ -38,10 +38,9 @@ sns.distplot(betas, ax=ax[1])
 plt.show()
 
 
-def estimator(*args,**kwargs):
+def estimator(*args, **kwargs):
     print(kwargs["test"])
     pass
-
 
  # second param is a place holder
  # should give 9^3 combinations

@@ -7,7 +7,13 @@ from tqdm import tqdm
 from cwgp.cwgp import CWGP
 
 
-def grid_search(estimator, x, y, params={}, reverse_model_order=False, **kwargs):
+def grid_search(
+        estimator,
+        x,
+        y,
+        params={},
+        reverse_model_order=False,
+        **kwargs):
     """
     Exhausts all given combinations of cwgp
 

@@ -82,7 +82,7 @@ class Phi():
                 try:
                     res = minimize(
                         self.likelihood,
-                        self.init_scale*np.random.rand(
+                        self.init_scale * np.random.rand(
                             self.par_len *
                             self.n +
                             self.kernel_params),
