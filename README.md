@@ -42,7 +42,7 @@ We then transform the data via
 
 ``` python
 t_exp, d = compgp.phi.comp_phi(params, exp)
-sns.distplot(transformed_betas)
+sns.distplot(t_exp)
 plt.show()
 ```
 ![](./images/2.png)
