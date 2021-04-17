@@ -51,7 +51,6 @@ def grid_search(
         cwgp[index] = {}
 
         t_data = copy.deepcopy(y)
-        print(params)
         if cv:
             kf = KFold(n_splits=n_splits, random_state=None, shuffle=False)
             for split_index, (train, val) in enumerate(kf.split(t_data)):
@@ -70,7 +69,11 @@ def grid_search(
             model_holder = fit_transform(
                 param, t_data, reverse_model_order=reverse_model_order)
             cwgp[index]["result"] = estimator(
-                x_train=x, y_train=t_data, model_holder=model_holder, **kwargs)
+                x_train=x,
+                y_train=t_data,
+                model_holder=model_holder,
+                hyperparams=param,
+                **kwargs)
         cwgp[index]["cwgp_combination"] = param
     return cwgp
 
