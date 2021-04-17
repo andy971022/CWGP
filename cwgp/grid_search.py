@@ -7,6 +7,7 @@ from sklearn.model_selection import KFold
 
 from cwgp.cwgp import CWGP
 
+
 def grid_search(
         estimator,
         x,
@@ -40,12 +41,10 @@ def grid_search(
     params_product = list(itertools.product(*cwgp_params))
     params_combination = list(itertools.product(params_product, repeat=c))
     print(params_product)
-    
 
     n_splits = kwargs.get("n_splits", 10)
     cv = kwargs.get("cv", False)
     reverse_model_order = kwargs.get("reverse_model_order", False)
-
 
     cwgp = {}
     for index, param in enumerate(tqdm(params_combination)):
@@ -57,13 +56,20 @@ def grid_search(
             for split_index, (train, val) in enumerate(kf.split(t_data)):
                 x_train, x_val = x[train], x[val]
                 y_train, y_val = t_data[train], t_data[val]
-                model_holder = fit_transform(param, y_train, reverse_model_order=reverse_model_order)
-                cwgp[index][split_index] = estimator(x_train=x_train, y_train=y_train, 
-                    x_val=x_val, y_val=y_val, model_holder=model_holder, **kwargs)
+                model_holder = fit_transform(
+                    param, y_train, reverse_model_order=reverse_model_order)
+                cwgp[index][split_index] = estimator(
+                    x_train=x_train,
+                    y_train=y_train,
+                    x_val=x_val,
+                    y_val=y_val,
+                    model_holder=model_holder,
+                    **kwargs)
         else:
-            model_holder = fit_transform(param, t_data, reverse_model_order=reverse_model_order)
-            cwgp[index]["result"] = estimator(x_train=x, y_train=t_data, 
-                    model_holder=model_holder, **kwargs)            
+            model_holder = fit_transform(
+                param, t_data, reverse_model_order=reverse_model_order)
+            cwgp[index]["result"] = estimator(
+                x_train=x, y_train=t_data, model_holder=model_holder, **kwargs)
         cwgp[index]["cwgp_combination"] = param
     return cwgp
 
