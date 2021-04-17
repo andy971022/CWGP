@@ -63,6 +63,7 @@ def grid_search(
                     y_train=y_train,
                     x_val=x_val,
                     y_val=y_val,
+                    hyperparams=param,
                     model_holder=model_holder,
                     **kwargs)
         else:
