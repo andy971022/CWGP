@@ -44,6 +44,8 @@ def grid_search(
 
     n_splits = kwargs.get("n_splits", 10)
     cv = kwargs.get("cv", False)
+    shuffle = kwargs.get("shuffle", False)
+    random_state = kwargs.get("random_state", 42)
     reverse_model_order = kwargs.get("reverse_model_order", False)
 
     cwgp = {}
@@ -52,7 +54,10 @@ def grid_search(
 
         t_data = copy.deepcopy(y)
         if cv:
-            kf = KFold(n_splits=n_splits, random_state=None, shuffle=False)
+            kf = KFold(
+                n_splits=n_splits,
+                random_state=random_state,
+                shuffle=shuffle)
             for split_index, (train, val) in enumerate(kf.split(t_data)):
                 x_train, x_val = x[train], x[val]
                 y_train, y_val = t_data[train], t_data[val]
