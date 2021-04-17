@@ -51,6 +51,7 @@ def grid_search(
         cwgp[index] = {}
 
         t_data = copy.deepcopy(y)
+        print(params)
         if cv:
             kf = KFold(n_splits=n_splits, random_state=None, shuffle=False)
             for split_index, (train, val) in enumerate(kf.split(t_data)):
