@@ -90,7 +90,7 @@ class Phi():
                             y,
                         ),
                         method=method)
-                except BaseException:
+                except Exception:
                     pass
         self.res = res
         return res
