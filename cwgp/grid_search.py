@@ -35,18 +35,13 @@ def grid_search(
         A dictionary containing all of the results
     """
     c = params.get("c", 2)
-    n = params.get("n", [2])
-    transformations = params.get("transformations", ["sa", "sal"])
-    cwgp_params = [transformations, n]
-    params_product = list(itertools.product(*cwgp_params))
-    params_combination = list(itertools.product(params_product, repeat=c))
-    print(params_product)
+    transformations = params.get("transformations", ["sa", "box_cox"])
+    params_combination = list(itertools.product(transformations, repeat=c))
 
     n_splits = kwargs.get("n_splits", 10)
     cv = kwargs.get("cv", False)
     shuffle = kwargs.get("shuffle", False)
-    random_state = kwargs.get("random_state", 42)
-    reverse_model_order = kwargs.get("reverse_model_order", False)
+    random_state = kwargs.get("random_state", None)
 
     cwgp = {}
     for index, param in enumerate(tqdm(params_combination)):
@@ -61,8 +56,10 @@ def grid_search(
             for split_index, (train, val) in enumerate(kf.split(t_data)):
                 x_train, x_val = x[train], x[val]
                 y_train, y_val = t_data[train], t_data[val]
-                model_holder = fit_transform(
-                    param, y_train, reverse_model_order=reverse_model_order)
+                print("ewagewagwe",y_train, x_train)
+                cwgp_model = fit_transform(
+                    param, y_train, x_train, **kwargs)
+                print(y_train)
                 cwgp[index][split_index] = estimator(
                     x_train=x_train,
                     y_train=y_train,
@@ -73,30 +70,24 @@ def grid_search(
                     train=train,
                     val=val,
                     hyperparams=param,
-                    model_holder=model_holder,
+                    cwgp_model=cwgp_model,
                     **kwargs)
         else:
-            model_holder = fit_transform(
-                param, t_data, reverse_model_order=reverse_model_order)
+            cwgp_model = fit_transform(
+                param, t_data, x, **kwargs)
             cwgp[index]["result"] = estimator(
                 x_train=x,
                 y_train=t_data,
-                model_holder=model_holder,
+                cwgp_model=cwgp_model,
                 hyperparams=param,
                 **kwargs)
         cwgp[index]["cwgp_combination"] = param
     return cwgp
 
 
-def fit_transform(param, y, reverse_model_order=False):
-    model_holder = []
-    for t, d in param:
-        cwgp_model = CWGP(t, n=d)
-        cwgp_model.fit(y)
-        y, y_d = cwgp_model.phi.comp_phi(
-            cwgp_model.phi.res.x, y)
-        model_holder.append(cwgp_model)
-    if reverse_model_order:
-        # For conveniences in inverse computation
-        model_holder = model_holder[::-1]
-    return model_holder
+def fit_transform(param, y, t, **kwargs):
+    cwgp_model = CWGP(list(param), **kwargs)
+    cwgp_model.fit(y, t, **kwargs)
+    y, y_d = cwgp_model.phi.comp_phi(
+        cwgp_model.phi.res.x, y)
+    return cwgp_model
