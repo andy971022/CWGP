@@ -9,16 +9,17 @@ from cwgp.grid_search import grid_search
 import cwgp
 
 print(cwgp)
+SIZE = 100
 
-
-betas = np.random.exponential(scale=5, size=100)
+betas = np.random.exponential(scale=3, size=SIZE)
 
 sns.distplot(betas)
 plt.show()
 
-compgp = CWGP("box_cox", n=1, kernel="OU", kernel_params_estimate=False)
+compgp = CWGP(["sa","box_cox","box_cox"], kernel="OU", kernel_params_estimate=True)
 
-model = compgp.fit(betas, method="l-bfgs-b")
+model = compgp.fit(betas, np.arange(SIZE, dtype="float"), verbose=True)
+print(compgp.phi.res.x)
 
 transformed_betas, d = compgp.phi.comp_phi(model.x, betas)
 
@@ -39,25 +40,34 @@ plt.show()
 
 
 def estimator(**kwargs):
-    print(kwargs)
-    y_train = kwargs["y_train"]
-    y_val = kwargs["y_val"]
-    x_train = kwargs["x_train"]
-    x_val = kwargs["x_val"]
-    for cwgp_model in kwargs["model_holder"]:
+    if kwargs.get("cv", False):
+        y_train = kwargs["y_train"]
+        y_val = kwargs["y_val"]
+        x_train = kwargs["x_train"]
+        x_val = kwargs["x_val"]
+        cwgp_model = kwargs["cwgp_model"]
+
         y_train, y_d = cwgp_model.phi.comp_phi(
             cwgp_model.phi.res.x, y_train)
         y_val, y_d = cwgp_model.phi.comp_phi(
             cwgp_model.phi.res.x, y_val)
-    stats.probplot(y_train, dist="norm", plot=plt)
-    stats.probplot(y_val, dist="norm", plot=plt)
-    plt.show()
+        sns.distplot(y_train)
+        plt.show()
+        # stats.probplot(y_train, dist="norm", plot=plt)
+        sns.distplot(y_val)
+        # stats.probplot(y_val, dist="norm", plot=plt)
+        plt.show()
 
 
  # second param is a place holder
  # should give 9^3 combinations
+# grid_search(
+#     estimator, betas, np.arange(SIZE, dtype="float"), {
+#         "c": 1, "transformations": [
+#                 "sa"]}, test="hi")
+
+
 grid_search(
-    estimator, betas, betas, {
-        "c": 3, "n": [
-            1, 2, 3], "transformations": [
-                "sa", "sal", "box_cox"]}, test="hi", cv=True,)
+    estimator, np.arange(SIZE , dtype="float"), betas,  {
+        "c": 2, "transformations": [
+                "box_cox", "sa"]}, test="hi", cv=True, n_splits=3)
