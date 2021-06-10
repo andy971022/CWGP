@@ -25,55 +25,55 @@ class Phi():
             self,
             fn,
             kernel="OU",
-            kernel_params_estimate=False,
-            par_len=None,
-            n=1):
-        self.fn = self.FN_BANK[fn]["fn"]  # a differentiable function
-        self.inv_fn = self.FN_BANK[fn]["inv_fn"]
-        self.d_fn = elementwise_grad(self.fn, 1)  # take derivative
+            kernel_params_estimate=True,
+            **kwargs
+            ):
+        self.fn = [self.FN_BANK[f]["fn"] for f in fn]  # a differentiable function
+        self.inv_fn = [self.FN_BANK[f]["inv_fn"] for f in fn[::-1]]
+        self.par_len = [self.FN_BANK[f]["par_len"] for f in fn]
+        self.d_fn = [elementwise_grad(f, 1) for f in self.fn]  # take derivative
         self.kernel = self.KERNEL_BANK[kernel]["kern"]
         self.kernel_params = self.KERNEL_BANK[kernel]["params"] if kernel_params_estimate else 0
-        self.par_len = self.FN_BANK[fn]["par_len"]
         self.init_scale = self.KERNEL_BANK[kernel]["init_scale"]
-        self.n = n
 
     def comp_phi(self, par, y):
-        assert len(par) >= self.par_len * self.n, "Not enough parameters"
+        assert len(par) >= sum(self.par_len), "Not enough parameters"
         comp = copy.deepcopy(y)
-        d_comp = 1
-        for i in range(0, self.n):
-            d_comp *= self.d_fn(par[self.par_len * i:], comp)
-            comp = self.fn(par[self.par_len * i:], comp)
+        d_comp, par_len = 1, 0
+        for i in range(0, len(self.fn)):
+            d_comp *= self.d_fn[i](par[par_len:], comp)
+            comp = self.fn[i](par[par_len:], comp)
+            par_len += self.par_len[i]
         return comp, d_comp
 
     def inv_comp_phi(self, par, x):
-        assert len(par) >= self.par_len * self.n, "Not enough parameters"
+        assert len(par) >= sum(self.par_len), "Not enough parameters"
         if self.kernel_params:
             par = par[:-self.kernel_params]
         inv_comp = copy.deepcopy(x)
-        for i in range(0, self.n):
-            if i == 0:
-                inv_comp = self.inv_fn(par[-self.par_len:], inv_comp)
-            else:
-                inv_comp = self.inv_fn(
-                    par[-self.par_len * (i + 1):-self.par_len * i], inv_comp)
+        par_len = 0
+        for i in range(0, len(self.fn)):
+            par_len += self.par_len[::-1][i]
+            inv_comp = self.inv_fn[i](par[-par_len:], inv_comp)
         return inv_comp
 
-    def likelihood(self, par, y):
+    def likelihood(self, par, y, t, mf):
         phi_y, chain_d_sal = self.comp_phi(par, y)
         t_phi_y = np.transpose(phi_y)
+        t_t = np.transpose(t)
+        mean_t = mf(t) if mf else np.zeros(t.shape)
         if self.kernel_params:
-            cov_xx = self.kernel(phi_y, t_phi_y, par[-self.kernel_params:])
+            cov_xx = self.kernel(t, t_t, par[-self.kernel_params:])
         else:
-            cov_xx = self.kernel(phi_y, t_phi_y)
-        gaussian_params = 0.5 * (t_phi_y) @ np.linalg.inv(cov_xx) @ phi_y
+            cov_xx = self.kernel(t, t_t)
+        gaussian_params = 0.5 * (t_t - np.transpose(mean_t)) @ np.linalg.inv(cov_xx) @ (t - mean_t)
         return np.ravel(0.5 * np.log(np.linalg.det(cov_xx)) +
                         gaussian_params - sum(np.log(chain_d_sal)))
 
     def reml(self, method):
         pass
 
-    def minimize_lf(self, y, method='l-bfgs-b', loop=True):
+    def minimize_lf(self, y, t, mf=None, method='l-bfgs-b', loop=True, verbose=False, **kwargs):
         # http://stackoverflow.com/questions/19843752/structure-of-inputs-to-scipy-minimize-function
         res = minimize
         res.success = False
@@ -83,14 +83,14 @@ class Phi():
                     res = minimize(
                         self.likelihood,
                         self.init_scale * np.random.rand(
-                            self.par_len *
-                            self.n +
+                            sum(self.par_len) +
                             self.kernel_params),
                         args=(
-                            y,
+                            y, t, mf
                         ),
                         method=method)
-                except Exception:
-                    pass
+                except Exception as e:
+                    if verbose:
+                        print(e)
         self.res = res
         return res
