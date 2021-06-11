@@ -56,10 +56,8 @@ def grid_search(
             for split_index, (train, val) in enumerate(kf.split(t_data)):
                 x_train, x_val = x[train], x[val]
                 y_train, y_val = t_data[train], t_data[val]
-                print("ewagewagwe",y_train, x_train)
                 cwgp_model = fit_transform(
                     param, y_train, x_train, **kwargs)
-                print(y_train)
                 cwgp[index][split_index] = estimator(
                     x_train=x_train,
                     y_train=y_train,
