@@ -17,7 +17,8 @@ betas = np.random.exponential(scale=5, size=SIZE)
 sns.distplot(betas)
 plt.show()
 
-compgp = CWGP(["box_cox", "sal", "sal","sa"], kernel="OU", kernel_params_estimate=True)
+compgp = CWGP(["box_cox", "sal", "sal", "sa"],
+              kernel="OU", kernel_params_estimate=True)
 
 model = compgp.fit(betas, np.arange(SIZE, dtype="float"), verbose=True)
 print(compgp.phi.res.x)
@@ -62,7 +63,6 @@ def estimator(**kwargs):
         # stats.probplot(y_val, dist="norm", plot=plt)
         plt.show()
 
-
  # second param is a place holder
  # should give 9^3 combinations
 # grid_search(
@@ -72,6 +72,6 @@ def estimator(**kwargs):
 
 
 grid_search(
-    estimator, np.arange(SIZE , dtype="float"), betas,  {
+    estimator, np.arange(SIZE, dtype="float"), betas, {
         "c": 4, "transformations": [
                 "box_cox", "sa", "sal"]}, test="hi", cv=True, n_splits=3)

@@ -27,11 +27,13 @@ class Phi():
             kernel="OU",
             kernel_params_estimate=True,
             **kwargs
-            ):
-        self.fn = [self.FN_BANK[f]["fn"] for f in fn]  # a differentiable function
+    ):
+        self.fn = [self.FN_BANK[f]["fn"]
+                   for f in fn]  # a differentiable function
         self.inv_fn = [self.FN_BANK[f]["inv_fn"] for f in fn[::-1]]
         self.par_len = [self.FN_BANK[f]["par_len"] for f in fn]
-        self.d_fn = [elementwise_grad(f, 1) for f in self.fn]  # take derivative
+        self.d_fn = [elementwise_grad(f, 1)
+                     for f in self.fn]  # take derivative
         self.kernel = self.KERNEL_BANK[kernel]["kern"]
         self.kernel_params = self.KERNEL_BANK[kernel]["params"] if kernel_params_estimate else 0
         self.init_scale = self.KERNEL_BANK[kernel]["init_scale"]
@@ -66,14 +68,23 @@ class Phi():
             cov_xx = self.kernel(t, t_t, par[-self.kernel_params:])
         else:
             cov_xx = self.kernel(t, t_t)
-        gaussian_params = 0.5 * (t_t - np.transpose(mean_t)) @ np.linalg.inv(cov_xx) @ (t - mean_t)
+        gaussian_params = 0.5 * \
+            (t_t - np.transpose(mean_t)) @ np.linalg.inv(cov_xx) @ (t - mean_t)
         return np.ravel(0.5 * np.log(np.linalg.det(cov_xx)) +
                         gaussian_params - sum(np.log(chain_d_sal)))
 
     def reml(self, method):
         pass
 
-    def minimize_lf(self, y, t, mf=None, method='l-bfgs-b', loop=True, verbose=False, **kwargs):
+    def minimize_lf(
+            self,
+            y,
+            t,
+            mf=None,
+            method='l-bfgs-b',
+            loop=True,
+            verbose=False,
+            **kwargs):
         # http://stackoverflow.com/questions/19843752/structure-of-inputs-to-scipy-minimize-function
         res = minimize
         res.success = False
