@@ -9,14 +9,15 @@ from cwgp.grid_search import grid_search
 import cwgp
 
 print(cwgp)
+np.random.seed(seed=32)
 SIZE = 100
 
-betas = np.random.exponential(scale=3, size=SIZE)
+betas = np.random.exponential(scale=5, size=SIZE)
 
 sns.distplot(betas)
 plt.show()
 
-compgp = CWGP(["sa","box_cox","box_cox"], kernel="OU", kernel_params_estimate=True)
+compgp = CWGP(["box_cox", "sal", "sal","sa"], kernel="OU", kernel_params_estimate=True)
 
 model = compgp.fit(betas, np.arange(SIZE, dtype="float"), verbose=True)
 print(compgp.phi.res.x)
@@ -25,8 +26,11 @@ transformed_betas, d = compgp.phi.comp_phi(model.x, betas)
 
 sns.distplot(transformed_betas)
 plt.show()
-
+plt.plot(np.arange(SIZE, dtype="float"), betas)
+plt.show()
 stats.probplot(transformed_betas, dist="norm", plot=plt)
+plt.show()
+plt.plot(np.arange(SIZE, dtype="float"), transformed_betas)
 plt.show()
 
 
@@ -69,5 +73,5 @@ def estimator(**kwargs):
 
 grid_search(
     estimator, np.arange(SIZE , dtype="float"), betas,  {
-        "c": 2, "transformations": [
-                "box_cox", "sa"]}, test="hi", cv=True, n_splits=3)
+        "c": 4, "transformations": [
+                "box_cox", "sa", "sal"]}, test="hi", cv=True, n_splits=3)
