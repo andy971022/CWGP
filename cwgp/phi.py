@@ -56,9 +56,6 @@ class Phi():
     def __init__(
             self,
             fn,
-            kernel="RBF",
-            kernel_params_estimate=True,
-            ARD=False,
             **kwargs
     ):
         self.fn = [self.FN_BANK[f]["fn"]
@@ -67,11 +64,11 @@ class Phi():
         self.par_len = [self.FN_BANK[f]["par_len"] for f in fn]
         self.d_fn = [elementwise_grad(f, 1)
                      for f in self.fn]  # take derivative
-        self.kernel = self.KERNEL_BANK[kernel]["kern"]
-        self.kernel_name = kernel
-        self.kernel_params = self.KERNEL_BANK[kernel]["params"] if kernel_params_estimate else 0
-        self.init_scale = self.KERNEL_BANK[kernel]["init_scale"]
-        self.ARD = ARD
+        self.kernel_name = kwargs.get("kernel", "RBF")
+        self.kernel = self.KERNEL_BANK[self.kernel_name]["kern"]
+        self.kernel_params = self.KERNEL_BANK[self.kernel_name]["params"] if kwargs.get("kernel_params_estimate", True) else 0
+        self.init_scale = self.KERNEL_BANK[self.kernel_name]["init_scale"]
+        self.ARD = kwargs.get("ARD", False)
         self.bounds = list(itertools.chain.from_iterable(
             [self.FN_BANK[f]["bounds"] for f in fn])) + [(None, None)] * self.kernel_params
 
