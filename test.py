@@ -73,4 +73,4 @@ def estimator(**kwargs):
 grid_search(
     estimator, np.arange(SIZE, dtype="float"), betas, {
         "c": 4, "transformations": [
-                "box_cox", "sa", "sal"]}, test="hi", cv=True, n_splits=3, verbose = True)
+                "box_cox", "sa", "sal"]}, test="hi", cv=True, n_splits=3, verbose=True)

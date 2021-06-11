@@ -9,12 +9,43 @@ from cwgp.kernel import RBF, OU, Matern32
 from cwgp.transformations import sal, sa, asinh, box_cox, inv_sal, inv_sa, inv_asinh, inv_box_cox
 from numba import jit
 
+
 class Phi():
     FN_BANK = {
-        "sal": {"fn": sal, "inv_fn": inv_sal, "par_len": 4, "bounds": [(-20, 20)]*4},
-        "sa": {"fn": sa, "inv_fn": inv_sa, "par_len": 2, "bounds": [(-20, 20)]*2},
-        "asinh": {"fn": asinh, "inv_fn": inv_asinh, "par_len": 4, "bounds": [(-20, 20),(1e-5, None),(1e-5, None),(-20, 20)]},
-        "box_cox": {"fn": box_cox, "inv_fn": inv_box_cox, "par_len": 1, "bounds": [(1e-5, None)]},
+        "sal": {
+            "fn": sal,
+            "inv_fn": inv_sal,
+            "par_len": 4,
+            "bounds": [
+                (-20,
+                 20)] * 4},
+        "sa": {
+            "fn": sa,
+            "inv_fn": inv_sa,
+            "par_len": 2,
+            "bounds": [
+                (-20,
+                 20)] * 2},
+        "asinh": {
+            "fn": asinh,
+            "inv_fn": inv_asinh,
+            "par_len": 4,
+            "bounds": [
+                (-20,
+                 20),
+                (1e-5,
+                 None),
+                (1e-5,
+                 None),
+                (-20,
+                 20)]},
+        "box_cox": {
+            "fn": box_cox,
+            "inv_fn": inv_box_cox,
+            "par_len": 1,
+            "bounds": [
+                (1e-5,
+                 None)]},
     }
 
     KERNEL_BANK = {
@@ -42,7 +73,8 @@ class Phi():
         self.kernel_params = self.KERNEL_BANK[kernel]["params"] if kernel_params_estimate else 0
         self.init_scale = self.KERNEL_BANK[kernel]["init_scale"]
         self.ARD = ARD
-        self.bounds = list(itertools.chain.from_iterable([self.FN_BANK[f]["bounds"] for f in fn])) + [(None, None)] * self.kernel_params
+        self.bounds = list(itertools.chain.from_iterable(
+            [self.FN_BANK[f]["bounds"] for f in fn])) + [(None, None)] * self.kernel_params
 
     def comp_phi(self, par, y):
         assert len(par) >= sum(self.par_len), "Not enough parameters"
@@ -71,11 +103,13 @@ class Phi():
         t_t = np.transpose(t)
         mean_t = mf(t) if mf else np.zeros(t.shape)
         if self.kernel_params:
-            cov_xx = self.kernel(1, *par[-self.kernel_params:]).K(t.reshape(-1,1), t.reshape(-1,1))
+            cov_xx = self.kernel(
+                1, *par[-self.kernel_params:]).K(t.reshape(-1, 1), t.reshape(-1, 1))
         else:
-            cov_xx = self.kernel(1).K(t.reshape(-1,1), t.reshape(-1,1))
+            cov_xx = self.kernel(1).K(t.reshape(-1, 1), t.reshape(-1, 1))
 
-        gaussian_params = 0.5 * (t_t - np.transpose(mean_t)) @ np.linalg.inv(cov_xx) @ (t - mean_t)
+        gaussian_params = 0.5 * \
+            (t_t - np.transpose(mean_t)) @ np.linalg.inv(cov_xx) @ (t - mean_t)
         return np.ravel(0.5 * np.log(np.linalg.det(cov_xx)) +
                         gaussian_params - np.sum(np.log(chain_d_sal)))
 
@@ -96,15 +130,15 @@ class Phi():
                 try:
                     res = minimize(
                         self.likelihood,
-                        
+
                         np.random.uniform(0, self.init_scale,
-                            sum(self.par_len)+self.kernel_params),
+                                          sum(self.par_len) + self.kernel_params),
                         args=(
                             y, t, mf
                         ),
                         method=kwargs.get("method", "L-BFGS-B"),
                         bounds=self.bounds,
-                        )
+                    )
                 except Exception as e:
                     if kwargs.get("verbose", False):
                         print(e)
