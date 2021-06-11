@@ -86,6 +86,4 @@ def grid_search(
 def fit_transform(param, y, t, **kwargs):
     cwgp_model = CWGP(list(param), **kwargs)
     cwgp_model.fit(y, t, **kwargs)
-    y, y_d = cwgp_model.phi.comp_phi(
-        cwgp_model.phi.res.x, y)
     return cwgp_model
