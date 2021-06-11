@@ -66,7 +66,8 @@ class Phi():
                      for f in self.fn]  # take derivative
         self.kernel_name = kwargs.get("kernel", "RBF")
         self.kernel = self.KERNEL_BANK[self.kernel_name]["kern"]
-        self.kernel_params = self.KERNEL_BANK[self.kernel_name]["params"] if kwargs.get("kernel_params_estimate", True) else 0
+        self.kernel_params = self.KERNEL_BANK[self.kernel_name]["params"] if kwargs.get(
+            "kernel_params_estimate", True) else 0
         self.init_scale = self.KERNEL_BANK[self.kernel_name]["init_scale"]
         self.ARD = kwargs.get("ARD", False)
         self.bounds = list(itertools.chain.from_iterable(
