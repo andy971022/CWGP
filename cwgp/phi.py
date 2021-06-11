@@ -7,7 +7,6 @@ import itertools
 
 from cwgp.kernel import RBF, OU, Matern32
 from cwgp.transformations import sal, sa, asinh, box_cox, inv_sal, inv_sa, inv_asinh, inv_box_cox
-from numba import jit
 
 
 class Phi():
