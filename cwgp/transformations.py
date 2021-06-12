@@ -14,7 +14,7 @@ def asinh(par, y):
 
 
 def inv_asinh(par, x):
-    return ((np.sinh(x - par[0]) / par[1]) * par[3]) + par[2]
+    return (np.sinh((x - par[0]) / par[1]) * par[3]) + par[2]
 
 
 def box_cox(par, y):
@@ -31,3 +31,11 @@ def sa(par, y):
 
 def inv_sa(par, x):
     return np.sinh((np.arcsinh(x) - par[1]) / par[0])
+
+
+def affine(par, y):
+    return par[0] + par[1] * y
+
+
+def inv_affine(par, x):
+    return (x - par[0]) / par[1]

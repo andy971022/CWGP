@@ -6,7 +6,7 @@ import GPy
 import itertools
 
 from cwgp.kernel import RBF, OU, Matern32
-from cwgp.transformations import sal, sa, asinh, box_cox, inv_sal, inv_sa, inv_asinh, inv_box_cox
+from cwgp.transformations import sal, sa, asinh, box_cox, affine, inv_sal, inv_sa, inv_asinh, inv_box_cox, inv_affine
 
 
 class Phi():
@@ -44,6 +44,15 @@ class Phi():
             "par_len": 1,
             "bounds": [
                 (1e-5,
+                 None)]},
+        "affine": {
+            "fn": affine,
+            "inv_fn": inv_affine,
+            "par_len": 2,
+            "bounds": [
+                (None,
+                 None),
+                (None,
                  None)]},
     }
 
