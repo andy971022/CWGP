@@ -17,7 +17,7 @@ betas = np.random.exponential(scale=5, size=SIZE)
 sns.distplot(betas)
 plt.show()
 
-compgp = CWGP(["sa", "sal"])
+compgp = CWGP(["sa", "box_cox"], kernel="OU", kernel_params_estimate=False)
 
 model = compgp.fit(betas, np.arange(SIZE, dtype="float"), verbose=False)
 print(compgp.phi.res.x)
