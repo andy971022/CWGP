@@ -125,7 +125,12 @@ class Phi():
             (t_phi_y - np.transpose(mean_t)) @ np.linalg.inv(cov_xx) @ (phi_y - mean_t)
 
         sign, logdet = np.linalg.slogdet(cov_xx)
-        return np.ravel(0.5 * sign * logdet + gaussian_params - np.sum(d_phi_y))
+        return np.ravel(
+            0.5 *
+            sign *
+            logdet +
+            gaussian_params -
+            np.sum(d_phi_y))
 
     def reml(self, method):
         pass
