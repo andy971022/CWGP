@@ -8,6 +8,7 @@ import itertools
 from cwgp.kernel import RBF, OU, Matern32
 from cwgp.transformations import sal, sa, asinh, box_cox, affine, inv_sal, inv_sa, inv_asinh, inv_box_cox, inv_affine, d_sal, d_sa, d_asinh, d_box_cox, d_affine
 
+
 class Phi():
     FN_BANK = {
         "sal": {
@@ -78,7 +79,7 @@ class Phi():
         # self.d_fn = [elementwise_grad(f, 1)
         #              for f in self.fn]  # take derivative
         self.d_fn = [self.FN_BANK[f]["d_fn"]
-                   for f in fn]
+                     for f in fn]
         self.kernel_name = kwargs.get("kernel", "RBF")
         self.kernel = self.KERNEL_BANK[self.kernel_name]["kern"]
         self.kernel_params = self.KERNEL_BANK[self.kernel_name]["params"] if kwargs.get(
@@ -120,10 +121,8 @@ class Phi():
         else:
             cov_xx = self.kernel(1).K(t.reshape(-1, 1), t.reshape(-1, 1))
 
-
         gaussian_params = 0.5 * \
             (t_phi_y - np.transpose(mean_t)) @ np.linalg.inv(cov_xx) @ (phi_y - mean_t)
-
 
         sign, logdet = np.linalg.slogdet(cov_xx)
         return 0.5 * sign * logdet + gaussian_params - np.sum(d_phi_y)
