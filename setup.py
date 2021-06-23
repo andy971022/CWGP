@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="CWGP",
-    version="2.0.4",
+    version="2.0.5",
     author="Andy Chen",
     author_email="andy97_861022_chen@hotmail.com",
     description="CWGP",

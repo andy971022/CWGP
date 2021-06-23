@@ -10,16 +10,16 @@ import cwgp
 
 print(cwgp)
 np.random.seed(seed=32)
-SIZE = 50
+SIZE = 70
 
 betas = np.random.exponential(scale=5, size=SIZE)
 
 sns.distplot(betas)
 plt.show()
 
-compgp = CWGP(["sa", "box_cox"], kernel="OU", kernel_params_estimate=False)
+compgp = CWGP(["sa", "box_cox","box_cox"])
 
-model = compgp.fit(betas, np.arange(SIZE, dtype="float"), verbose=False)
+model = compgp.fit(betas, np.arange(SIZE, dtype="float"), verbose=True)
 print(compgp.phi.res.x)
 
 transformed_betas, d = compgp.phi.comp_phi(model.x, betas)
