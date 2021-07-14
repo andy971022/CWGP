@@ -93,13 +93,3 @@ They should be exactly the same.
 ### Sinh-Arcsinh and Affine (SAL)
 
 `from cwgp.transformations import sal`
-
-## Kernels
-
-### Ornstein-Uhlenbeck Kernel
-
-`from cwgp.kernel import OU`
-
-### Radial Basis function Kernel
-
-`from cwgp.kernel import RBF`

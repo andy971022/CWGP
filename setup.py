@@ -22,7 +22,8 @@ setuptools.setup(
         'autograd',
         'scipy>=1.5.4',
         'tqdm>=4.56.1',
-        'numpy>=1.18.0'
+        'numpy>=1.18.0',
+        'gpy>=1.9.9',
     ],
     python_requires='>=3.6',
 )
