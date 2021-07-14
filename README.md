@@ -9,6 +9,8 @@ A package that transforms anything to a Gaussian distribution.
 
 Visit [here](./examples/cwgp_beta.ipynb)
 
+## Installation
+`pip install CWGP`
 
 ## Quick Start
 
@@ -16,8 +18,10 @@ Let's randomly generate 100 numbers following an exponential distribution.
 ``` python
 import numpy as np
 import seaborn as sns
+import matplotlib.pyplot as plt
 
-exp = np.random.exponential(scale=5, size=100)
+exp = np.random.exponential(scale=5, size=50)
+idx = np.arange(50)
 ```
 ![](./images/1.png)
 
@@ -25,12 +29,12 @@ We now instantiate a CWGP class consisting of 3 Sinh-Arcsinh transformations.
 ``` python
 from cwgp.cwgp import CWGP
 
-compgp = CWGP("sa", n=3)
+compgp = CWGP(["sa","box_cox"])
 ```
 
 We then fit our data into the model. This minimizes the negative log likelihood function and stores the corresponding parameters for us.
 ``` python
-compgp.fit(exp)
+compgp.fit(exp, idx)
 ```
 
 To get the parameters, we do
