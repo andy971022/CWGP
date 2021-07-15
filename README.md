@@ -3,11 +3,7 @@ This package is dedicated to realizing methods used in this [paper](https://arxi
 
 
 ## TLDR;
-A package that transforms anything to a Gaussian distribution.
-
-## Tutorial
-
-Visit [here](./examples/cwgp_beta.ipynb)
+A package that transforms anything to a Gaussian process.
 
 ## Installation
 `pip install CWGP`
